@@ -1,5 +1,6 @@
 package com.example.a12_ormliteandroid;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.example.a12_ormliteandroid.adapters.OrdenadoresAdapter;
@@ -11,15 +12,18 @@ import com.google.android.material.snackbar.Snackbar;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.LayoutInflater;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -74,12 +78,49 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Ordenador ordenador = new Ordenador("Acer", "Aspire", 8, 1.5f);
-                if (daoOrdenadores != null){
+                // Llamar a createOrdenador y mostrarlo (Alert Dialog)
+                createOrdenador().show();
+            }
+        });
+    }
+
+    // Func para crear ordenador con el Alert Dialog
+    private AlertDialog createOrdenador(){
+        // 1. Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Crear Ordenador");
+        builder.setCancelable(false);
+        View layoutAlert = getLayoutInflater().inflate(R.layout.ordenador_dialog, null);
+        // La siguiente línea es lo mismo, para clases que no son actividades necesito el context
+        // layoutAlert = LayoutInflater.from(this).inflate(R.layout.ordenador_dialog, null);
+
+        // 2. TextViews para el Alert
+        TextView txtMarca = layoutAlert.findViewById(R.id.txtMarcaDialog);
+        TextView txtModelo = layoutAlert.findViewById(R.id.txtModeloDialog);
+        TextView txtRam = layoutAlert.findViewById(R.id.txtRamDialog);
+        TextView txtHD = layoutAlert.findViewById(R.id.txtHDDialog);
+
+        // 3. Botones del Alert Dialog
+        builder.setNegativeButton("CANCELAR", null);
+        builder.setPositiveButton("CREAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!txtMarca.getText().toString().isEmpty()
+                    && !txtModelo.getText().toString().isEmpty()
+                    && !txtRam.getText().toString().isEmpty()
+                    && !txtHD.getText().toString().isEmpty()){
+                    // Si los campos están rellenos, creamos ordenador y lo añadimos a la lista
+                    Ordenador ordenador = new Ordenador();
+                    ordenador.setMarca(txtMarca.getText().toString());
+                    ordenador.setModelo(txtModelo.getText().toString());
+                    ordenador.setRam(Integer.parseInt(txtRam.getText().toString()));
+                    ordenador.setHd(Float.parseFloat(txtHD.getText().toString()));
+
                     try {
-                        int lastID = daoOrdenadores.create(ordenador);   // INSERT en la Base de datos
-                        ordenador.setId(lastID);    // Darle el ID
-                        listaOrdenadores.add(ordenador);    // Añadirlo a la lista
+                        daoOrdenadores.create(ordenador);
+                        int lastId = daoOrdenadores.extractId(ordenador);
+                        ordenador.setId(lastId);
+                        listaOrdenadores.add(ordenador);
                         adapter.notifyDataSetChanged();
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
@@ -87,5 +128,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // 3. Return AlertDialog
+        return builder.create();
     }
 }
