@@ -43,8 +43,17 @@ public class OrdenadoresHelper extends OrmLiteSqliteOpenHelper {
         }
     }
 
+    // Cuando cambiemos la Base de Datos (añadir campos -> precio, pantalla, color)
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-
+        // Para cumplir con todos los cambios y solucionar errores en usuarios que pasen
+        // de la versión 1 a la 3, la 2 a la 5 etc
+        if (oldVersion < 3){
+            try {
+                getDaoOrdenador().executeRaw("alter table ordenadores add column precio float not null default 0");
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
 }

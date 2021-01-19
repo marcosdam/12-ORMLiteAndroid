@@ -1,6 +1,8 @@
 package com.example.a12_ormliteandroid.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a12_ormliteandroid.CrudActivity;
 import com.example.a12_ormliteandroid.R;
 import com.example.a12_ormliteandroid.modelos.Ordenador;
 
@@ -43,6 +46,21 @@ public class OrdenadoresAdapter extends RecyclerView.Adapter<OrdenadoresAdapter.
         holder.txtModelo.setText(objects.get(position).getModelo());
         holder.txtRam.setText(objects.get(position).getRam()+"");
         holder.txtHd.setText(objects.get(position).getHd()+"");
+
+        // Asignar onClick a toda la fila (a tod0 el ViewHolder)
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 1. Crear Bundle con el ID del ordenador en la BD
+                Bundle bundle = new Bundle();
+                bundle.putInt("ID", objects.get(position).getId());
+                // 2. Crear Intent
+                // (desde un Adapter no podemos decir que el origen es una Activity, en este caso es el context)
+                Intent intent = new Intent(context, CrudActivity.class);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
         TextView txtRam = layoutAlert.findViewById(R.id.txtRamDialog);
         TextView txtHD = layoutAlert.findViewById(R.id.txtHDDialog);
 
+        builder.setView(layoutAlert);
+
         // 3. Botones del Alert Dialog
         builder.setNegativeButton("CANCELAR", null);
         builder.setPositiveButton("CREAR", new DialogInterface.OnClickListener() {
@@ -131,5 +133,19 @@ public class MainActivity extends AppCompatActivity {
 
         // 3. Return AlertDialog
         return builder.create();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Siempre que vuelta de la otra actividad limpiará la lista y la volverá a rellenar con lo obtenido de la query
+        listaOrdenadores.clear();
+        try {
+            listaOrdenadores.addAll(daoOrdenadores.queryForAll());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        adapter.notifyDataSetChanged();
     }
 }

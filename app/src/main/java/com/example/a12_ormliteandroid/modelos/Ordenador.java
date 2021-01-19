@@ -28,16 +28,19 @@ public class Ordenador {
     private int ram;
     @DatabaseField()
     private float hd;
+    @DatabaseField(canBeNull = false, defaultValue = "0")
+    private float precio;
 
     // Necesario const vacío para ORM Lite
     public Ordenador() {
     }
 
-    public Ordenador(String marca, String modelo, int ram, float hd) {
+    public Ordenador(String marca, String modelo, int ram, float hd, float precio) {
         this.marca = marca;
         this.modelo = modelo;
         this.ram = ram;
         this.hd = hd;
+        this.precio = precio;
     }
 
     public String getMarca() {
@@ -70,5 +73,13 @@ public class Ordenador {
 
     public void setHd(float hd) {
         this.hd = hd;
+    }
+
+    public float getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(float precio) {
+        this.precio = precio;
     }
 }
